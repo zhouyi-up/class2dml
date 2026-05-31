@@ -5,8 +5,6 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.SimplePersistentStateComponent
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
-import com.intellij.ui.dsl.stringToInt
-import com.jetbrains.rd.generator.nova.PredefinedType
 
 @Service
 @State(name = "class2dml-setting", storages = [Storage("class2dml.xml")])

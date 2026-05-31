@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "2.1.0"
+    id("org.jetbrains.kotlin.jvm") version "2.2.21"
     id("org.jetbrains.intellij.platform") version "2.7.1"
 //    id("org.jetbrains.intellij.platform.migration") version "2.1.0"
     id("org.jetbrains.changelog") version "2.4.0"
@@ -15,7 +15,7 @@ plugins {
 fun dateValue(pattern: String): String = LocalDate.now(ZoneId.of("Asia/Shanghai")).format(DateTimeFormatter.ofPattern(pattern))
 
 group = "com.liuujun"
-version = "1.1.8"
+version = "1.1.9"
 
 repositories {
     maven {
@@ -28,12 +28,12 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.17.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.21.1")
     implementation("org.apache.commons:commons-lang3:3.18.0")
 
     intellijPlatform{
-        intellijIdeaUltimate("2025.2")
+        intellijIdeaUltimate("2026.1")
         bundledPlugins("com.intellij.java")
 //        instrumentationTools()
     }
@@ -50,8 +50,8 @@ intellijPlatform {
         version = project.version.toString()
 
         ideaVersion{
-            sinceBuild = "232"
-            untilBuild = "253.*"
+            sinceBuild = "242"
+            untilBuild = "261.*"
         }
 
         vendor {
