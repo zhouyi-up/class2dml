@@ -1,58 +1,36 @@
-# AGENTS.md
+# Repository Guidelines
 
-Guidance for coding agents working in this repository.
+## 项目结构与模块组织
 
-## Project Overview
+Class2String 是 IntelliJ IDEA 插件，用于从 Java 类生成 SQL DDL 与 TypeScript 类型/接口。核心代码位于 `src/main/java/com/liuujun/class2dml` 与 `src/main/kotlin/com/liuujun/class2dml`。动作、映射和工具类主要在 Java 包中；服务、资源访问和部分 UI 对话框在 Kotlin 包中。
 
-Class2String is an IntelliJ IDEA plugin that generates SQL DDL and TypeScript types/interfaces from Java classes. The plugin id is `com.liuujun.class2dml`, while the marketplace/plugin name is `Class2String`.
+资源文件位于 `src/main/resources`：`META-INF/plugin.xml` 注册插件扩展与动作，`messages/` 存放英文与 `zh_CN` 本地化文案，修改用户可见文本时必须保持 key 同步。`doc/` 保存 README 使用的截图与 GIF。当前仓库未设置独立 `src/test` 目录；新增测试时应按 Gradle/JVM 常规结构放在 `src/test/java` 或 `src/test/kotlin`。
 
-## Repository Layout
+## 构建、测试与开发命令
 
-- `build.gradle.kts`: Gradle build, IntelliJ Platform plugin configuration, publishing settings, and compatibility range.
-- `settings.gradle.kts`: root project name.
-- `src/main/java/com/liuujun/class2dml`: Java implementation for actions, settings UI, mappings, and utility classes.
-- `src/main/kotlin/com/liuujun/class2dml`: Kotlin services, bundle helper, and UI dialog code.
-- `src/main/resources/META-INF/plugin.xml`: plugin metadata, extension registrations, and action registrations.
-- `src/main/resources/messages`: localization bundles. Keep English and `zh_CN` keys in sync.
-- `doc`: README screenshots and GIFs.
-- `CHANGELOG.md`: release notes consumed by the Gradle changelog plugin.
+从仓库根目录使用 Gradle Wrapper：
 
-## Build And Verification
+- `./gradlew build`：编译并执行常规检查。
+- `./gradlew runIde`：在沙箱 IDE 中运行插件，适合手动验证动作与设置页。
+- `./gradlew verifyPlugin`：执行插件兼容性与打包相关校验。
+- `./gradlew buildPlugin`：生成可分发插件包。
 
-Use the Gradle wrapper from the repository root.
+项目使用 Gradle Wrapper 构建，当前面向 IntelliJ IDEA 2026.2（262.*）验证。IDEA 2026.2 依赖 Java 25 class 文件，本地构建应使用 JDK 25。
 
-- Compile/check the project: `./gradlew build`
-- Run the plugin in a sandbox IDE: `./gradlew runIde`
-- Verify plugin packaging/signing-related checks where relevant: `./gradlew verifyPlugin`
-- Build the distributable plugin artifact: `./gradlew buildPlugin`
+## 编码风格与命名约定
 
-The project targets JVM 17 and IntelliJ IDEA Ultimate `2026.1` through the IntelliJ Platform Gradle plugin. Avoid changing platform versions, plugin id, or compatibility bounds unless the task explicitly requires it.
+遵循现有 Java/Kotlin 风格和包结构，优先复用 `com.liuujun.class2dml` 下已有模式。动作类通常注册在 `plugin.xml` 并继承 IntelliJ Action API。涉及 PSI 遍历时先判断空值、文件类型和类结构，避免假设输入一定合法。
 
-## Development Notes
+用户可见文案通过 `Class2dmlBundle` 获取，并同步维护 `Class2dmlBundle.properties` 与 `Class2dmlBundle_zh_CN.properties`。注释保持少量且有帮助，不为显而易见的代码添加解释。
 
-- Prefer existing packages and patterns under `com.liuujun.class2dml`.
-- Actions are registered in `plugin.xml` and generally extend IntelliJ action APIs.
-- User-visible text should go through `Class2dmlBundle` and both message bundle files.
-- Keep generated SQL/TypeScript behavior consistent with the existing mapping classes and settings stored by `SettingStorage`.
-- Be careful with IntelliJ PSI usage. Validate nullability and file/class shape before traversing PSI elements.
-- Keep Java and Kotlin interop simple; do not introduce new frameworks for small changes.
+## 测试与验证
 
-## Release Notes
+优先使用 `./gradlew build` 做基础验证。涉及插件 UI、动作注册、设置存储或 PSI 行为时，同时使用 `./gradlew runIde` 手动验证。新增测试应贴近变更风险，测试命名清晰描述行为，例如 `SqlTypeMappingTest` 或 `TypeScriptInterfaceActionTest`。
 
-When making user-visible changes, add a short entry under `## [Unreleased]()` in `CHANGELOG.md`. The changelog plugin uses the latest entry for plugin change notes during `patchPluginXml`.
+## 提交与 Pull Request 规范
 
-## Generated And Local Files
+Git 历史中既有版本号式提交，也有中文说明。提交信息应简短说明变更目的，例如 `修复 TypeScript 类型映射` 或 `Update plugin compatibility metadata`。PR 应包含变更摘要、验证命令结果、相关 issue；涉及 UI 或生成结果变化时附截图、GIF 或示例输出。
 
-Do not edit generated or machine-local directories unless explicitly asked:
+## 发布说明与本地文件
 
-- `build/`
-- `.gradle/`
-- `.idea/`
-- `.intellijPlatform/`
-
-## Style
-
-- Match the surrounding Java/Kotlin formatting.
-- Keep comments sparse and useful.
-- Use ASCII unless editing existing localized text or resources that already require non-ASCII.
-- Keep changes narrowly scoped; avoid unrelated refactors.
+用户可见变更需要在 `CHANGELOG.md` 的 `## [Unreleased]()` 下添加简短条目。不要编辑生成或本机目录，除非任务明确要求：`build/`、`.gradle/`、`.idea/`、`.intellijPlatform/`。
